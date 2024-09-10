@@ -247,20 +247,30 @@ date: ${event.date}\n---`;
           const url = URL.createObjectURL(blob);
 
           markdownFiles += `
-            <div class="bg-gray-800 rounded-lg p-4 shadow-md">
-              <p class="text-lg font-semibold text-emerald-400 mb-2">Created file: ${fileName}</p>
-              <pre class="bg-gray-700 p-3 rounded text-sm overflow-x-auto">${markdownContent}</pre>
-              <a href="${url}" download="${fileName}" class="inline-block mt-3 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">
-                Download ${fileName}
-              </a>
-            </div>`;
+      <div class="bg-gray-800 rounded-lg p-4 shadow-md opacity-0 transform translate-y-4 transition-all duration-500 ease-out">
+        <p class="text-lg font-semibold text-emerald-400 mb-2">Created file: ${fileName}</p>
+        <pre class="bg-gray-700 p-3 rounded text-sm overflow-x-auto">${markdownContent}</pre>
+        <a href="${url}" download="${fileName}" class="inline-block mt-3 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">
+          Download ${fileName}
+        </a>
+      </div>`;
         }
 
         const downloadAllButton = `
-          <button onclick="downloadAllFiles()" class="mb-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">
-            Download All Files
-          </button>`;
+    <button onclick="downloadAllFiles()" class="mb-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">
+      Download All Files
+    </button>`;
+        
         document.getElementById("results").innerHTML = downloadAllButton + markdownFiles;
+
+        // Trigger animations after a short delay
+        setTimeout(() => {
+          document.querySelectorAll('#results > div').forEach((el, index) => {
+            setTimeout(() => {
+              el.classList.remove('opacity-0', 'translate-y-4');
+            }, index * 100);
+          });
+        }, 50);
 
         window.eventsZip = zip;
       }
