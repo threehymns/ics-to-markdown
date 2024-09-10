@@ -9,7 +9,30 @@ import Results from '../components/Results.astro';
 <Layout title="ICS to Markdown">
   <DropZone />
   <div class="container mx-auto px-4">
-    <h1 class="text-3xl font-bold text-center my-20 text-emerald-400"><code class="bg-slate-800 rounded px-1">ICS</code> to <code class="bg-slate-800 rounded px-1">Markdown</code> Converter</h1>
+    <div class="mt-20 flex justify-center">
+      <svg class="size-40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect width="14" height="0" x="5" y="5" fill="currentColor"><animate fill="freeze" attributeName="height" begin="0.6s" dur="0.2s" values="0;3"/></rect><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="64" stroke-dashoffset="64" d="M12 4h7c0.55 0 1 0.45 1 1v14c0 0.55 -0.45 1 -1 1h-14c-0.55 0 -1 -0.45 -1 -1v-14c0 -0.55 0.45 -1 1 -1Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="64;0"/></path><path stroke-dasharray="4" stroke-dashoffset="4" d="M7 4v-2M17 4v-2"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="4;0"/></path><path stroke-dasharray="12" stroke-dashoffset="12" d="M7 11h10"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.8s" dur="0.2s" values="12;0"/></path><path stroke-dasharray="8" stroke-dashoffset="8" d="M7 15h7"><animate fill="freeze" attributeName="stroke-dashoffset" begin="1s" dur="0.2s" values="8;0"/></path></g></svg>
+      <svg class="size-40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="16" stroke-dashoffset="16" d="M5 12h13.5"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.2s" values="16;0"/></path><path stroke-dasharray="10" stroke-dashoffset="10" d="M19 12l-5 5M19 12l-5 -5"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.2s" dur="0.2s" values="10;0"/></path></g></svg>
+      
+      <svg class="size-40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <!-- <path fill="red" d="m15.25 12.125l-.675-.675q-.225-.225-.525-.213t-.525.238T13.3 12t.225.525L15.3 14.3q.3.3.7.3t.7-.3l1.775-1.775Q18.7 12.3 18.7 12t-.225-.525t-.538-.225t-.537.225l-.65.65V9.75q0-.325-.213-.537T16 9t-.537.213t-.213.537zM4 20q-.825 0-1.412-.587T2 18V6q0-.825.588-1.412T4 4h16q.825 0 1.413.588T22 6v12q0 .825-.587 1.413T20 20zm0-2h16V6H4zm0 0V6zm3-7.5h1v2.25q0 .325.213.538t.537.212t.538-.213t.212-.537V10.5h1v3.75q0 .325.213.538t.537.212t.538-.213t.212-.537V10q0-.425-.288-.712T11 9H6.5q-.425 0-.712.288T5.5 10v4.25q0 .325.213.538T6.25 15t.538-.213T7 14.25z"/> -->
+        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+          <path stroke-dasharray="64" stroke-dashoffset="64" d="M13 5h7c0.55 0 1 0.45 1 1v12c0 0.55 -0.45 1 -1 1h-16c-0.55 0 -1 -0.45 -1 -1v-12c0 -0.55 0.45 -1 1 -1Z">
+            <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="64;0"/>    <!-- rectangle -->
+          </path>
+          <path stroke-dasharray="4" stroke-dashoffset="4" stroke-width="1.5" d="M8.75 10v3">
+            <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.7s" dur="0.3s" values="4;0"/>    <!-- M centerpost -->
+          </path>
+          <path stroke-dasharray="16" stroke-dashoffset="16" stroke-width="1.5" d="M6.25 14.25v-4.5h5v4.5">
+            <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.4s" dur="0.4s" values="16;0"/>    <!-- M -->
+          </path>
+          <path stroke-dasharray="8" stroke-dashoffset="8" stroke-width="1.5" d="M16 9.75v4.25L14 12M16 14L18 12">
+            <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.8s" dur="0.4s" values="8;0"/>    <!-- arrow -->
+          </path>
+        </g>
+      </svg>
+
+    </div>
+    <h1 class="text-4xl font-bold text-center my-20 text-emerald-400"><code class="bg-slate-800 rounded px-1">ICS</code> to <code class="bg-slate-800 rounded px-1">Markdown</code> Converter</h1>
     <div class="max-w-lg mx-auto bg-gray-800 rounded-xl shadow-lg p-10">
       <p class="text-center text-sm mb-10 max-w-lg mx-auto">
         Easily import your events and schedules into your <a href="https://obsidian.md/" class="text-emerald-300">Obsidian</a> vault. 
