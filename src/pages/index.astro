@@ -1,316 +1,106 @@
 ---
-
+import Layout from '../layouts/Layout.astro';
+import DropZone from '../components/DropZone.astro';
+import FileUpload from '../components/FileUpload.astro';
+import ConvertButton from '../components/ConvertButton.astro';
+import Results from '../components/Results.astro';
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
-    <title>ICS to Markdown</title>
-  </head>
-  <body class="bg-gray-900 text-gray-100 min-h-screen">
-    <div id="dropZone" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-90 z-50 pointer-events-none opacity-0 transition-all duration-300 ease-in-out m-4">
-      <div class="w-full h-full border-8 border-dashed border-emerald-400 flex items-center justify-center">
-        <div class="text-center">
-          <div class="text-6xl mb-4">📁</div>
-          <div class="text-4xl font-bold text-emerald-400 mb-2">Drop your ICS file here</div>
-          <div class="text-xl text-gray-300">Release to convert</div>
-        </div>
-      </div>
+<Layout title="ICS to Markdown">
+  <DropZone />
+  <div class="container mx-auto px-4">
+    <h1 class="text-3xl font-bold text-center my-20 text-emerald-400"><code class="bg-slate-800 rounded px-1">ICS</code> to <code class="bg-slate-800 rounded px-1">Markdown</code> Converter</h1>
+    <div class="max-w-lg mx-auto bg-gray-800 rounded-xl shadow-lg p-10">
+      <p class="text-center text-sm mb-10 max-w-lg mx-auto">
+        Easily import your events and schedules into your <a href="https://obsidian.md/" class="text-emerald-300">Obsidian</a> vault. 
+        <br>
+        Convert your ICS calendar files into Markdown format for use with the <a href="https://github.com/obsidian-community/obsidian-full-calendar" class="text-emerald-300">Obsidian Full Calendar plugin.</a> 
+      </p>
+      <FileUpload />
+      <ConvertButton />
     </div>
-    <div class="container mx-auto px-4">
-      <h1 class="text-3xl font-bold text-center my-20 text-emerald-400"><code class="bg-slate-800 rounded px-1">ICS</code> to <code class="bg-slate-800 rounded px-1">Markdown</code> Converter</h1>
-      <div class="max-w-lg mx-auto bg-gray-800 rounded-xl shadow-lg p-10">
-        <p class="text-center text-sm mb-10 max-w-lg mx-auto">
-          Easily import your events and schedules into your <a href="https://obsidian.md/" class="text-emerald-300">Obsidian</a> vault. 
-          <br>
-          Convert your ICS calendar files into Markdown format for use with the <a href="https://github.com/obsidian-community/obsidian-full-calendar" class="text-emerald-300">Obsidian Full Calendar plugin.</a> 
-        </p>
-        <div class="">
-          <label for="icsFile" class="block text-lg font-medium text-gray-300 mx-auto p-20 bg-slate-700 border-dashed border-2 border-emerald-600 rounded-3xl text-center cursor-pointer">
-            <span id="fileLabel">Drop or Select an ICS File</span>
-          </label>
-          <input type="file" id="icsFile" name="icsFile" accept=".ics" 
-            class="hidden w-full text-sm text-gray-400
-              file:mr-4 file:py-2 file:px-4
-              file:rounded-full file:border-0
-              file:text-sm file:font-semibold
-              file:bg-emerald-500 file:text-gray-100
-              file:hover:bg-emerald-600
-              file:cursor-pointer">
-          <script is:inline>
-            document.addEventListener('DOMContentLoaded', function() {
-              const fileInput = document.getElementById('icsFile');
-              const fileLabel = document.querySelector('label[for="icsFile"]');
-              const dropZone = document.getElementById('dropZone');
-              const body = document.body;
+    <Results />
+  </div>
 
-              function showDropZone() {
-                dropZone.classList.remove('pointer-events-none', 'opacity-0');
-                dropZone.classList.add('opacity-100');
-              }
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const fileInput = document.getElementById('icsFile');
+      const fileLabel = document.querySelector('label[for="icsFile"]');
+      const dropZone = document.getElementById('dropZone');
+      const body = document.body;
 
-              function hideDropZone() {
-                dropZone.classList.remove('opacity-100');
-                dropZone.classList.add('pointer-events-none', 'opacity-0');
-              }
-
-              function handleDrop(e) {
-                e.preventDefault();
-                hideDropZone();
-
-                if (e.dataTransfer.files.length > 0) {
-                  const file = e.dataTransfer.files[0];
-                  fileInput.files = e.dataTransfer.files;
-                  fileLabel.textContent = file.name;
-
-                  // Automatically convert the file
-                  convertICS(file);
-                }
-              }
-
-              let dragCounter = 0;
-
-              function handleDragEnter(e) {
-                e.preventDefault();
-                dragCounter++;
-                showDropZone();
-              }
-
-              function handleDragLeave(e) {
-                e.preventDefault();
-                dragCounter--;
-                if (dragCounter === 0) {
-                  hideDropZone();
-                }
-              }
-
-              body.addEventListener('dragenter', handleDragEnter);
-              body.addEventListener('dragleave', handleDragLeave);
-              body.addEventListener('drop', (e) => {
-                dragCounter = 0;
-                handleDrop(e);
-              });
-              dropZone.addEventListener('dragover', (e) => e.preventDefault());
-              dropZone.addEventListener('drop', handleDrop);
-
-              fileInput.addEventListener('change', function(e) {
-                if (e.target.files.length > 0) {
-                  fileLabel.textContent = e.target.files[0].name;
-                } else {
-                  fileLabel.textContent = 'Drop or Select ICS File';
-                }
-              });
-
-              fileLabel.addEventListener('dragenter', (e) => {
-                e.stopPropagation();
-                showDropZone();
-              });
-
-              fileLabel.addEventListener('dragleave', (e) => {
-                e.stopPropagation();
-              });
-
-              function convertICS(file) {
-                if (!file) {
-                  file = document.getElementById("icsFile").files[0];
-                }
-
-                if (!file) {
-                  document.getElementById("results").innerHTML = "<p>Please select an ICS file.</p>";
-                  return;
-                }
-
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                  const icsData = e.target.result;
-                  const events = parseICS(icsData);
-                  generateMarkdownFiles(events);
-                };
-                reader.onerror = function(e) {
-                  console.error("Error reading file:", e);
-                  document.getElementById("results").innerHTML = "<p>Error reading the ICS file. Please try again.</p>";
-                };
-                reader.readAsText(file);
-              }
-
-              const convertButton = document.getElementById('convertButton');
-              convertButton.addEventListener('click', () => convertICS());
-            });
-          </script>
-        </div>
-        <button id="convertButton" class="mt-10 mx-auto block bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-10 rounded-full transition duration-300 ease-in-out transform hover:scale-105">
-          Convert
-        </button>
-      </div>
-      <div id="results" class="mt-8 pb-8 space-y-4"></div>
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
-    <script is:inline>
-      function formatTime(timeString) {
-        const hours = timeString.slice(0, 2);
-        const minutes = timeString.slice(2, 4);
-        return `${hours}:${minutes}`;
+      function showDropZone() {
+        dropZone.classList.remove('pointer-events-none', 'opacity-0');
+        dropZone.classList.add('opacity-100');
       }
 
-      function parseICS(icsData) {
-        const events = [];
-        const lines = icsData.split("\n");
-        let currentEvent = {};
-        let capturingTitle = false;
+      function hideDropZone() {
+        dropZone.classList.remove('opacity-100');
+        dropZone.classList.add('pointer-events-none', 'opacity-0');
+      }
 
-        for (const line of lines) {
-          if (line.startsWith("BEGIN:VEVENT")) {
-            currentEvent = {};
-            capturingTitle = false;
-          } else if (line.startsWith("END:VEVENT")) {
-            events.push(currentEvent);
-            capturingTitle = false;
-          } else {
-            if (capturingTitle) {
-              if (line.startsWith(" ")) {
-                currentEvent.title += line.trim();
-              } else {
-                capturingTitle = false;
-              }
-            }
+      function handleDrop(e) {
+        e.preventDefault();
+        hideDropZone();
 
-            const [key, ...valueParts] = line.split(":");
-            const value = valueParts.join(":").trim();
+        if (e.dataTransfer.files.length > 0) {
+          const file = e.dataTransfer.files[0];
+          fileInput.files = e.dataTransfer.files;
+          fileLabel.textContent = file.name;
 
-            switch (key.trim()) {
-              case "SUMMARY":
-                currentEvent.title = value;
-                capturingTitle = true;
-                break;
-              case "DTSTART":
-                currentEvent.startTime = formatTime(value.slice(9, 13));
-                currentEvent.date = formatDate(value.slice(0, 8));
-                break;
-              case "DTEND":
-                currentEvent.endTime = formatTime(value.slice(9, 13));
-                break;
-              case "DURATION":
-                const duration = value.slice(2);
-                const durationHours = parseInt(duration.slice(0, 2), 10);
-                const durationMinutes = parseInt(duration.slice(2, 4), 10);
-                const startHours = parseInt(currentEvent.startTime.slice(0, 2), 10);
-                const startMinutes = parseInt(currentEvent.startTime.slice(3, 5), 10);
-                
-                let endHours = startHours + durationHours;
-                let endMinutes = startMinutes + durationMinutes;
-                
-                if (endMinutes >= 60) {
-                  endHours += Math.floor(endMinutes / 60);
-                  endMinutes %= 60;
-                }
-                
-                endHours %= 24;
-                
-                currentEvent.endTime = `${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}`;
-                break;
-              case "DTSTAMP":
-                currentEvent.date = formatDate(value.slice(0, 8));
-                break;
-              case "RRULE":
-                if (value.includes("FREQ=DAILY")) {
-                  currentEvent.allDay = true;
-                }
-                break;
-            }
-          }
+          // Automatically convert the file
+          convertICS(file);
         }
-        return events;
       }
 
-      function formatDate(dateString) {
-        const year = dateString.slice(0, 4);
-        const month = dateString.slice(4, 6);
-        const day = dateString.slice(6, 8);
-        return `${year}-${month}-${day}`;
+      let dragCounter = 0;
+
+      function handleDragEnter(e) {
+        e.preventDefault();
+        dragCounter++;
+        showDropZone();
       }
 
-      function generateMarkdownFiles(events) {
-        let markdownFiles = "";
-        const zip = new JSZip();
-
-        for (const event of events) {
-          const sanitizedTitle = event.title.replace(/[<>:"/\\|?*\x00-\x1F]/g, "").trim();
-          const fileName = `${event.date} ${sanitizedTitle}.md`.replace(/\s+/g, " ");
-          const markdownContent = `---
-title: "${event.title}"
-allDay: ${event.allDay ? "true" : "false"}
-startTime: ${event.startTime}
-endTime: ${event.endTime}
-date: ${event.date}\n---`;
-
-          zip.file(fileName, markdownContent);
-
-          const blob = new Blob([markdownContent], { type: "text/markdown" });
-          const url = URL.createObjectURL(blob);
-
-          markdownFiles += `
-  <div class="bg-gray-800 rounded-lg p-4 max-w-xl mx-auto shadow-md opacity-0 transform translate-y-4 transition-all duration-500 ease-out">
-    <div class="flex justify-between items-start mb-3">
-      <div>
-        <p class="text-sm text-emerald-400 mb-1">Created File</p>
-        <p class="font-semibold text-gray-400 pr-2">${fileName}</p>
-      </div>
-      <a href="${url}" download="${fileName}" class="flex-shrink-0 text-emerald-300 hover:text-emerald-400 font-medium py-1 px-2 rounded transition duration-300 ease-in-out">
-        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-        </svg>
-
-      </a>
-    </div>
-    <pre class="bg-gray-700 p-3 rounded text-sm overflow-x-auto">${markdownContent}</pre>
-  </div>`;        }
-
-        const downloadAllButton = `
-    <button onclick="downloadAllFiles()" class="mb-8 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 ease-in-out transform hover:scale-105 shadow-lg flex items-center justify-center mx-auto opacity-0 translate-y-4">
-      <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-        <path fill-rule="evenodd" d="M9.75 6.75h-3a3 3 0 0 0-3 3v7.5a3 3 0 0 0 3 3h7.5a3 3 0 0 0 3-3v-7.5a3 3 0 0 0-3-3h-3V1.5a.75.75 0 0 0-1.5 0v5.25Zm0 0h1.5v5.69l1.72-1.72a.75.75 0 1 1 1.06 1.06l-3 3a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 1 1 1.06-1.06l1.72 1.72V6.75Z" clip-rule="evenodd" />
-        <path d="M7.151 21.75a2.999 2.999 0 0 0 2.599 1.5h7.5a3 3 0 0 0 3-3v-7.5c0-1.11-.603-2.08-1.5-2.599v7.099a4.5 4.5 0 0 1-4.5 4.5H7.151Z" />
-      </svg>
-
-      Download All Files
-    </button>`;
-  
-        document.getElementById("results").innerHTML = downloadAllButton + markdownFiles;
-
-        // Trigger animations after a short delay
-        setTimeout(() => {
-          const downloadButton = document.querySelector('#results > button');
-          downloadButton.classList.remove('opacity-0', 'translate-y-4');
-    
-          document.querySelectorAll('#results > div').forEach((el, index) => {
-            setTimeout(() => {
-              el.classList.remove('opacity-0', 'translate-y-4');
-            }, (index + 1) * 100); // +1 to start after the button animation
-          });
-        }, 50);
-
-        window.eventsZip = zip;
+      function handleDragLeave(e) {
+        e.preventDefault();
+        dragCounter--;
+        if (dragCounter === 0) {
+          hideDropZone();
+        }
       }
 
-      function downloadAllFiles() {
-        window.eventsZip
-          .generateAsync({ type: "blob" })
-          .then(function (content) {
-            const url = URL.createObjectURL(content);
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = "markdown_files.zip";
-            link.click();
-          });
-      }
+      body.addEventListener('dragenter', handleDragEnter);
+      body.addEventListener('dragleave', handleDragLeave);
+      body.addEventListener('drop', (e) => {
+        dragCounter = 0;
+        handleDrop(e);
+      });
+      dropZone.addEventListener('dragover', (e) => e.preventDefault());
+      dropZone.addEventListener('drop', handleDrop);
 
-      function convertICS() {
-        const icsFile = document.getElementById("icsFile").files[0];
+      fileInput.addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+          fileLabel.textContent = e.target.files[0].name;
+        } else {
+          fileLabel.textContent = 'Drop or Select ICS File';
+        }
+      });
 
-        if (!icsFile) {
+      fileLabel.addEventListener('dragenter', (e) => {
+        e.stopPropagation();
+        showDropZone();
+      });
+
+      fileLabel.addEventListener('dragleave', (e) => {
+        e.stopPropagation();
+      });
+
+      function convertICS(file) {
+        if (!file) {
+          file = document.getElementById("icsFile").files[0];
+        }
+
+        if (!file) {
           document.getElementById("results").innerHTML = "<p>Please select an ICS file.</p>";
           return;
         }
@@ -325,13 +115,195 @@ date: ${event.date}\n---`;
           console.error("Error reading file:", e);
           document.getElementById("results").innerHTML = "<p>Error reading the ICS file. Please try again.</p>";
         };
-        reader.readAsText(icsFile);
+        reader.readAsText(file);
       }
 
-      document.addEventListener('DOMContentLoaded', function() {
-        const convertButton = document.getElementById('convertButton');
-        convertButton.addEventListener('click', convertICS);
-      });
-    </script>
-  </body>
-</html>
+      const convertButton = document.getElementById('convertButton');
+      convertButton.addEventListener('click', () => convertICS());
+    });
+
+    function formatTime(timeString) {
+      const hours = timeString.slice(0, 2);
+      const minutes = timeString.slice(2, 4);
+      return `${hours}:${minutes}`;
+    }
+
+    function parseICS(icsData) {
+      const events = [];
+      const lines = icsData.split("\n");
+      let currentEvent = {};
+      let capturingTitle = false;
+
+      for (const line of lines) {
+        if (line.startsWith("BEGIN:VEVENT")) {
+          currentEvent = {};
+          capturingTitle = false;
+        } else if (line.startsWith("END:VEVENT")) {
+          events.push(currentEvent);
+          capturingTitle = false;
+        } else {
+          if (capturingTitle) {
+            if (line.startsWith(" ")) {
+              currentEvent.title += line.trim();
+            } else {
+              capturingTitle = false;
+            }
+          }
+
+          const [key, ...valueParts] = line.split(":");
+          const value = valueParts.join(":").trim();
+
+          switch (key.trim()) {
+            case "SUMMARY":
+              currentEvent.title = value;
+              capturingTitle = true;
+              break;
+            case "DTSTART":
+              currentEvent.startTime = formatTime(value.slice(9, 13));
+              currentEvent.date = formatDate(value.slice(0, 8));
+              break;
+            case "DTEND":
+              currentEvent.endTime = formatTime(value.slice(9, 13));
+              break;
+            case "DURATION":
+              const duration = value.slice(2);
+              const durationHours = parseInt(duration.slice(0, 2), 10);
+              const durationMinutes = parseInt(duration.slice(2, 4), 10);
+              const startHours = parseInt(currentEvent.startTime.slice(0, 2), 10);
+              const startMinutes = parseInt(currentEvent.startTime.slice(3, 5), 10);
+              
+              let endHours = startHours + durationHours;
+              let endMinutes = startMinutes + durationMinutes;
+              
+              if (endMinutes >= 60) {
+                endHours += Math.floor(endMinutes / 60);
+                endMinutes %= 60;
+              }
+              
+              endHours %= 24;
+              
+              currentEvent.endTime = `${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}`;
+              break;
+            case "DTSTAMP":
+              currentEvent.date = formatDate(value.slice(0, 8));
+              break;
+            case "RRULE":
+              if (value.includes("FREQ=DAILY")) {
+                currentEvent.allDay = true;
+              }
+              break;
+          }
+        }
+      }
+      return events;
+    }
+
+    function formatDate(dateString) {
+      const year = dateString.slice(0, 4);
+      const month = dateString.slice(4, 6);
+      const day = dateString.slice(6, 8);
+      return `${year}-${month}-${day}`;
+    }
+
+    function generateMarkdownFiles(events) {
+      let markdownFiles = "";
+      const zip = new JSZip();
+
+      for (const event of events) {
+        const sanitizedTitle = event.title.replace(/[<>:"/\\|?*\x00-\x1F]/g, "").trim();
+        const fileName = `${event.date} ${sanitizedTitle}.md`.replace(/\s+/g, " ");
+        const markdownContent = `---
+title: "${event.title}"
+allDay: ${event.allDay ? "true" : "false"}
+startTime: ${event.startTime}
+endTime: ${event.endTime}
+date: ${event.date}\n---`;
+
+        zip.file(fileName, markdownContent);
+
+        const blob = new Blob([markdownContent], { type: "text/markdown" });
+        const url = URL.createObjectURL(blob);
+
+        markdownFiles += `
+<div class="bg-gray-800 rounded-lg p-4 max-w-xl mx-auto shadow-md opacity-0 transform translate-y-4 transition-all duration-500 ease-out">
+  <div class="flex justify-between items-start mb-3">
+    <div>
+      <p class="text-sm text-emerald-400 mb-1">Created File</p>
+      <p class="font-semibold text-gray-400 pr-2">${fileName}</p>
+    </div>
+    <a href="${url}" download="${fileName}" class="flex-shrink-0 text-emerald-300 hover:text-emerald-400 font-medium py-1 px-2 rounded transition duration-300 ease-in-out">
+      <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+      </svg>
+
+    </a>
+  </div>
+  <pre class="bg-gray-700 p-3 rounded text-sm overflow-x-auto">${markdownContent}</pre>
+</div>`;      }
+
+      const downloadAllButton = `
+  <button onclick="downloadAllFiles()" class="mb-8 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 ease-in-out transform hover:scale-105 shadow-lg flex items-center justify-center mx-auto opacity-0 translate-y-4">
+    <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+      <path fill-rule="evenodd" d="M9.75 6.75h-3a3 3 0 0 0-3 3v7.5a3 3 0 0 0 3 3h7.5a3 3 0 0 0 3-3v-7.5a3 3 0 0 0-3-3h-3V1.5a.75.75 0 0 0-1.5 0v5.25Zm0 0h1.5v5.69l1.72-1.72a.75.75 0 1 1 1.06 1.06l-3 3a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 1 1 1.06-1.06l1.72 1.72V6.75Z" clip-rule="evenodd" />
+      <path d="M7.151 21.75a2.999 2.999 0 0 0 2.599 1.5h7.5a3 3 0 0 0 3-3v-7.5c0-1.11-.603-2.08-1.5-2.599v7.099a4.5 4.5 0 0 1-4.5 4.5H7.151Z" />
+    </svg>
+
+    Download All Files
+  </button>`;
+
+      document.getElementById("results").innerHTML = downloadAllButton + markdownFiles;
+
+      // Trigger animations after a short delay
+      setTimeout(() => {
+        const downloadButton = document.querySelector('#results > button');
+        downloadButton.classList.remove('opacity-0', 'translate-y-4');
+  
+        document.querySelectorAll('#results > div').forEach((el, index) => {
+          setTimeout(() => {
+            el.classList.remove('opacity-0', 'translate-y-4');
+          }, (index + 1) * 100); // +1 to start after the button animation
+        });
+      }, 50);
+
+      window.eventsZip = zip;
+    }
+
+    function downloadAllFiles() {
+      window.eventsZip
+        .generateAsync({ type: "blob" })
+        .then(function (content) {
+          const url = URL.createObjectURL(content);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = "markdown_files.zip";
+          link.click();
+        });
+    }
+
+    function convertICS() {
+      const icsFile = document.getElementById("icsFile").files[0];
+
+      if (!icsFile) {
+        document.getElementById("results").innerHTML = "<p>Please select an ICS file.</p>";
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const icsData = e.target.result;
+        const events = parseICS(icsData);
+        generateMarkdownFiles(events);
+      };
+      reader.onerror = function(e) {
+        console.error("Error reading file:", e);
+        document.getElementById("results").innerHTML = "<p>Error reading the ICS file. Please try again.</p>";
+      };
+      reader.readAsText(icsFile);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const convertButton = document.getElementById('convertButton');
+      convertButton.addEventListener('click', convertICS);
+    });
+  </script>
+</Layout>
