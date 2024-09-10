@@ -21,136 +21,132 @@
       </div>
     </div>
     <div class="container mx-auto px-4">
-      
-		<h1 class="text-3xl font-bold text-center my-20 text-emerald-400"><code class="bg-slate-800 rounded px-1">ICS</code> to <code class="bg-slate-800 rounded px-1">Markdown</code> Converter</h1>
-
-		<div class="max-w-lg mx-auto bg-gray-800 rounded-xl shadow-lg p-10">
-		<p class="text-center text-sm mb-10 max-w-lg mx-auto">
-			Easily import your events and schedules into your <a href="https://obsidian.md/" class="text-emerald-300">Obsidian</a> vault. 
-			<br>
-			Convert your ICS calendar files into Markdown format for use with the <a href="https://github.com/obsidian-community/obsidian-full-calendar" class="text-emerald-300">Obsidian Full Calendar plugin.</a> 
-		</p>
-      <div class="">
-        <label for="icsFile" class="block text-lg font-medium text-gray-300 mx-auto p-20 bg-slate-700 border-dashed border-2 border-emerald-600 rounded-3xl text-center cursor-pointer">
+      <h1 class="text-3xl font-bold text-center my-20 text-emerald-400"><code class="bg-slate-800 rounded px-1">ICS</code> to <code class="bg-slate-800 rounded px-1">Markdown</code> Converter</h1>
+      <div class="max-w-lg mx-auto bg-gray-800 rounded-xl shadow-lg p-10">
+        <p class="text-center text-sm mb-10 max-w-lg mx-auto">
+          Easily import your events and schedules into your <a href="https://obsidian.md/" class="text-emerald-300">Obsidian</a> vault. 
+          <br>
+          Convert your ICS calendar files into Markdown format for use with the <a href="https://github.com/obsidian-community/obsidian-full-calendar" class="text-emerald-300">Obsidian Full Calendar plugin.</a> 
+        </p>
+        <div class="">
+          <label for="icsFile" class="block text-lg font-medium text-gray-300 mx-auto p-20 bg-slate-700 border-dashed border-2 border-emerald-600 rounded-3xl text-center cursor-pointer">
             <span id="fileLabel">Drop or Select an ICS File</span>
-        </label>
-        <input type="file" id="icsFile" name="icsFile" accept=".ics" 
-        class="hidden w-full text-sm text-gray-400
-            file:mr-4 file:py-2 file:px-4
-            file:rounded-full file:border-0
-            file:text-sm file:font-semibold
-            file:bg-emerald-500 file:text-gray-100
-            file:hover:bg-emerald-600
-            file:cursor-pointer
-		">
-								<script is:inline>
-									document.addEventListener('DOMContentLoaded', function() {
-										const fileInput = document.getElementById('icsFile');
-										const fileLabel = document.querySelector('label[for="icsFile"]');
-										const dropZone = document.getElementById('dropZone');
-										const body = document.body;
+          </label>
+          <input type="file" id="icsFile" name="icsFile" accept=".ics" 
+            class="hidden w-full text-sm text-gray-400
+              file:mr-4 file:py-2 file:px-4
+              file:rounded-full file:border-0
+              file:text-sm file:font-semibold
+              file:bg-emerald-500 file:text-gray-100
+              file:hover:bg-emerald-600
+              file:cursor-pointer">
+          <script is:inline>
+            document.addEventListener('DOMContentLoaded', function() {
+              const fileInput = document.getElementById('icsFile');
+              const fileLabel = document.querySelector('label[for="icsFile"]');
+              const dropZone = document.getElementById('dropZone');
+              const body = document.body;
 
-										function showDropZone() {
-											dropZone.classList.remove('pointer-events-none', 'opacity-0');
-											dropZone.classList.add('opacity-100');
-										}
+              function showDropZone() {
+                dropZone.classList.remove('pointer-events-none', 'opacity-0');
+                dropZone.classList.add('opacity-100');
+              }
 
-										function hideDropZone() {
-											dropZone.classList.remove('opacity-100');
-											dropZone.classList.add('pointer-events-none', 'opacity-0');
-										}
+              function hideDropZone() {
+                dropZone.classList.remove('opacity-100');
+                dropZone.classList.add('pointer-events-none', 'opacity-0');
+              }
 
-										function handleDrop(e) {
-											e.preventDefault();
-											hideDropZone();
-					
-											if (e.dataTransfer.files.length > 0) {
-												const file = e.dataTransfer.files[0];
-												fileInput.files = e.dataTransfer.files;
-												fileLabel.textContent = file.name;
-						
-												// Automatically convert the file
-												convertICS(file);
-											}
-										}
-											let dragCounter = 0;
+              function handleDrop(e) {
+                e.preventDefault();
+                hideDropZone();
 
-											function handleDragEnter(e) {
-												e.preventDefault();
-												dragCounter++;
-												showDropZone();
-											}
+                if (e.dataTransfer.files.length > 0) {
+                  const file = e.dataTransfer.files[0];
+                  fileInput.files = e.dataTransfer.files;
+                  fileLabel.textContent = file.name;
 
-											function handleDragLeave(e) {
-												e.preventDefault();
-												dragCounter--;
-												if (dragCounter === 0) {
-													hideDropZone();
-												}
-											}
+                  // Automatically convert the file
+                  convertICS(file);
+                }
+              }
 
-											body.addEventListener('dragenter', handleDragEnter);
-											body.addEventListener('dragleave', handleDragLeave);
-											body.addEventListener('drop', (e) => {
-												dragCounter = 0;
-												handleDrop(e);
-											});
-										dropZone.addEventListener('dragover', (e) => e.preventDefault());
-										dropZone.addEventListener('drop', handleDrop);
+              let dragCounter = 0;
 
-										fileInput.addEventListener('change', function(e) {
-											if (e.target.files.length > 0) {
-												fileLabel.textContent = e.target.files[0].name;
-											} else {
-												fileLabel.textContent = 'Drop or Select ICS File';
-											}
-										});
+              function handleDragEnter(e) {
+                e.preventDefault();
+                dragCounter++;
+                showDropZone();
+              }
 
-										fileLabel.addEventListener('dragenter', (e) => {
-											e.stopPropagation();
-											showDropZone();
-										});
+              function handleDragLeave(e) {
+                e.preventDefault();
+                dragCounter--;
+                if (dragCounter === 0) {
+                  hideDropZone();
+                }
+              }
 
-										fileLabel.addEventListener('dragleave', (e) => {
-											e.stopPropagation();
-										});
+              body.addEventListener('dragenter', handleDragEnter);
+              body.addEventListener('dragleave', handleDragLeave);
+              body.addEventListener('drop', (e) => {
+                dragCounter = 0;
+                handleDrop(e);
+              });
+              dropZone.addEventListener('dragover', (e) => e.preventDefault());
+              dropZone.addEventListener('drop', handleDrop);
 
-										function convertICS(file) {
-											if (!file) {
-												file = document.getElementById("icsFile").files[0];
-											}
+              fileInput.addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                  fileLabel.textContent = e.target.files[0].name;
+                } else {
+                  fileLabel.textContent = 'Drop or Select ICS File';
+                }
+              });
 
-											if (!file) {
-												document.getElementById("results").innerHTML = "<p>Please select an ICS file.</p>";
-												return;
-											}
+              fileLabel.addEventListener('dragenter', (e) => {
+                e.stopPropagation();
+                showDropZone();
+              });
 
-											const reader = new FileReader();
-											reader.onload = function(e) {
-												const icsData = e.target.result;
-												const events = parseICS(icsData);
-												generateMarkdownFiles(events);
-											};
-											reader.onerror = function(e) {
-												console.error("Error reading file:", e);
-												document.getElementById("results").innerHTML = "<p>Error reading the ICS file. Please try again.</p>";
-											};
-											reader.readAsText(file);
-										}
+              fileLabel.addEventListener('dragleave', (e) => {
+                e.stopPropagation();
+              });
 
-										const convertButton = document.getElementById('convertButton');
-										convertButton.addEventListener('click', () => convertICS());
-									});
-								</script>
-								</div>
+              function convertICS(file) {
+                if (!file) {
+                  file = document.getElementById("icsFile").files[0];
+                }
+
+                if (!file) {
+                  document.getElementById("results").innerHTML = "<p>Please select an ICS file.</p>";
+                  return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                  const icsData = e.target.result;
+                  const events = parseICS(icsData);
+                  generateMarkdownFiles(events);
+                };
+                reader.onerror = function(e) {
+                  console.error("Error reading file:", e);
+                  document.getElementById("results").innerHTML = "<p>Error reading the ICS file. Please try again.</p>";
+                };
+                reader.readAsText(file);
+              }
+
+              const convertButton = document.getElementById('convertButton');
+              convertButton.addEventListener('click', () => convertICS());
+            });
+          </script>
+        </div>
         <button id="convertButton" class="mt-10 mx-auto block bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-10 rounded-full transition duration-300 ease-in-out transform hover:scale-105">
           Convert
         </button>
       </div>
-
       <div id="results" class="mt-8 pb-8 space-y-4"></div>
     </div>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
     <script is:inline>
       function formatTime(timeString) {
