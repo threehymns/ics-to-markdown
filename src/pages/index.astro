@@ -252,28 +252,43 @@ date: ${event.date}\n---`;
           const url = URL.createObjectURL(blob);
 
           markdownFiles += `
-      <div class="bg-gray-800 rounded-lg p-4 shadow-md opacity-0 transform translate-y-4 transition-all duration-500 ease-out">
-        <p class="text-lg font-semibold text-emerald-400 mb-2">Created file: ${fileName}</p>
-        <pre class="bg-gray-700 p-3 rounded text-sm overflow-x-auto">${markdownContent}</pre>
-        <a href="${url}" download="${fileName}" class="inline-block mt-3 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">
-          Download ${fileName}
-        </a>
-      </div>`;
-        }
+  <div class="bg-gray-800 rounded-lg p-4 max-w-xl mx-auto shadow-md opacity-0 transform translate-y-4 transition-all duration-500 ease-out">
+    <div class="flex justify-between items-start mb-3">
+      <div>
+        <p class="text-sm text-emerald-400 mb-1">Created File</p>
+        <p class="text-lg font-semibold text-gray-400 pr-2">${fileName}</p>
+      </div>
+      <a href="${url}" download="${fileName}" class="flex-shrink-0 text-emerald-300 hover:text-emerald-400 font-medium py-1 px-2 rounded transition duration-300 ease-in-out">
+        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+        </svg>
+
+      </a>
+    </div>
+    <pre class="bg-gray-700 p-3 rounded text-sm overflow-x-auto">${markdownContent}</pre>
+  </div>`;        }
 
         const downloadAllButton = `
-    <button onclick="downloadAllFiles()" class="mb-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">
+    <button onclick="downloadAllFiles()" class="mb-8 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 ease-in-out transform hover:scale-105 shadow-lg flex items-center justify-center mx-auto opacity-0 translate-y-4">
+      <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+        <path fill-rule="evenodd" d="M9.75 6.75h-3a3 3 0 0 0-3 3v7.5a3 3 0 0 0 3 3h7.5a3 3 0 0 0 3-3v-7.5a3 3 0 0 0-3-3h-3V1.5a.75.75 0 0 0-1.5 0v5.25Zm0 0h1.5v5.69l1.72-1.72a.75.75 0 1 1 1.06 1.06l-3 3a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 1 1 1.06-1.06l1.72 1.72V6.75Z" clip-rule="evenodd" />
+        <path d="M7.151 21.75a2.999 2.999 0 0 0 2.599 1.5h7.5a3 3 0 0 0 3-3v-7.5c0-1.11-.603-2.08-1.5-2.599v7.099a4.5 4.5 0 0 1-4.5 4.5H7.151Z" />
+      </svg>
+
       Download All Files
     </button>`;
-        
+  
         document.getElementById("results").innerHTML = downloadAllButton + markdownFiles;
 
         // Trigger animations after a short delay
         setTimeout(() => {
+          const downloadButton = document.querySelector('#results > button');
+          downloadButton.classList.remove('opacity-0', 'translate-y-4');
+    
           document.querySelectorAll('#results > div').forEach((el, index) => {
             setTimeout(() => {
               el.classList.remove('opacity-0', 'translate-y-4');
-            }, index * 100);
+            }, (index + 1) * 100); // +1 to start after the button animation
           });
         }, 50);
 
