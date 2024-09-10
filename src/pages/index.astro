@@ -11,6 +11,13 @@
     <title>ICS to Markdown</title>
   </head>
   <body class="bg-gray-900 text-gray-100 min-h-screen">
+    <div id="dropZone" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-90 z-50 pointer-events-none opacity-0 transition-all duration-300 ease-in-out">
+      <div class="text-center">
+        <div class="text-6xl mb-4">📁</div>
+        <div class="text-4xl font-bold text-emerald-400 mb-2">Drop your ICS file here</div>
+        <div class="text-xl text-gray-300">Release to convert</div>
+      </div>
+    </div>
     <div class="container mx-auto px-4">
       
 		<h1 class="text-3xl font-bold text-center my-20 text-emerald-400"><code class="bg-slate-800 rounded px-1">ICS</code> to <code class="bg-slate-800 rounded px-1">Markdown</code> Converter</h1>
@@ -33,25 +40,98 @@
             file:bg-emerald-500 file:text-gray-100
             file:hover:bg-emerald-600
             file:cursor-pointer
-        ">
-		<script is:inline>
-			document.addEventListener('DOMContentLoaded', function() {
-			  const fileInput = document.getElementById('icsFile');
-			  const fileLabel = document.getElementById('fileLabel');
-		  
-			  fileInput.addEventListener('change', function(e) {
-				if (e.target.files.length > 0) {
-				  fileLabel.textContent = e.target.files[0].name;
-				} else {
-				  fileLabel.textContent = 'Drop or Select ICS File';
-				}
-			  });
-		  
-			  const convertButton = document.getElementById('convertButton');
-			  convertButton.addEventListener('click', convertICS);
-			});
-		  </script>
-		</div>
+		">
+								<script is:inline>
+									document.addEventListener('DOMContentLoaded', function() {
+										const fileInput = document.getElementById('icsFile');
+										const fileLabel = document.querySelector('label[for="icsFile"]');
+										const dropZone = document.getElementById('dropZone');
+										const body = document.body;
+
+										function showDropZone() {
+											dropZone.classList.remove('pointer-events-none', 'opacity-0');
+											dropZone.classList.add('opacity-100');
+										}
+
+										function hideDropZone() {
+											dropZone.classList.remove('opacity-100');
+											dropZone.classList.add('pointer-events-none', 'opacity-0');
+										}
+
+										function handleDrop(e) {
+											e.preventDefault();
+											hideDropZone();
+					
+											if (e.dataTransfer.files.length > 0) {
+												const file = e.dataTransfer.files[0];
+												fileInput.files = e.dataTransfer.files;
+												fileLabel.textContent = file.name;
+						
+												// Automatically convert the file
+												convertICS(file);
+											}
+										}
+
+										body.addEventListener('dragenter', showDropZone);
+										body.addEventListener('dragover', (e) => {
+											e.preventDefault();
+											showDropZone();
+										});
+										body.addEventListener('dragleave', (e) => {
+											if (!e.relatedTarget || e.relatedTarget.id !== 'dropZone') {
+												hideDropZone();
+											}
+										});
+										body.addEventListener('drop', handleDrop);
+
+										dropZone.addEventListener('dragover', (e) => e.preventDefault());
+										dropZone.addEventListener('drop', handleDrop);
+
+										fileInput.addEventListener('change', function(e) {
+											if (e.target.files.length > 0) {
+												fileLabel.textContent = e.target.files[0].name;
+											} else {
+												fileLabel.textContent = 'Drop or Select ICS File';
+											}
+										});
+
+										fileLabel.addEventListener('dragenter', (e) => {
+											e.stopPropagation();
+											showDropZone();
+										});
+
+										fileLabel.addEventListener('dragleave', (e) => {
+											e.stopPropagation();
+										});
+
+										function convertICS(file) {
+											if (!file) {
+												file = document.getElementById("icsFile").files[0];
+											}
+
+											if (!file) {
+												document.getElementById("results").innerHTML = "<p>Please select an ICS file.</p>";
+												return;
+											}
+
+											const reader = new FileReader();
+											reader.onload = function(e) {
+												const icsData = e.target.result;
+												const events = parseICS(icsData);
+												generateMarkdownFiles(events);
+											};
+											reader.onerror = function(e) {
+												console.error("Error reading file:", e);
+												document.getElementById("results").innerHTML = "<p>Error reading the ICS file. Please try again.</p>";
+											};
+											reader.readAsText(file);
+										}
+
+										const convertButton = document.getElementById('convertButton');
+										convertButton.addEventListener('click', () => convertICS());
+									});
+								</script>
+								</div>
         <button id="convertButton" class="mt-10 mx-auto block bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-10 rounded-full transition duration-300 ease-in-out transform hover:scale-105">
           Convert
         </button>
