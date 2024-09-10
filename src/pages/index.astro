@@ -73,19 +73,28 @@
 												convertICS(file);
 											}
 										}
+											let dragCounter = 0;
 
-										body.addEventListener('dragenter', showDropZone);
-										body.addEventListener('dragover', (e) => {
-											e.preventDefault();
-											showDropZone();
-										});
-										body.addEventListener('dragleave', (e) => {
-											if (!e.relatedTarget || e.relatedTarget.id !== 'dropZone') {
-												hideDropZone();
+											function handleDragEnter(e) {
+												e.preventDefault();
+												dragCounter++;
+												showDropZone();
 											}
-										});
-										body.addEventListener('drop', handleDrop);
 
+											function handleDragLeave(e) {
+												e.preventDefault();
+												dragCounter--;
+												if (dragCounter === 0) {
+													hideDropZone();
+												}
+											}
+
+											body.addEventListener('dragenter', handleDragEnter);
+											body.addEventListener('dragleave', handleDragLeave);
+											body.addEventListener('drop', (e) => {
+												dragCounter = 0;
+												handleDrop(e);
+											});
 										dropZone.addEventListener('dragover', (e) => e.preventDefault());
 										dropZone.addEventListener('drop', handleDrop);
 
